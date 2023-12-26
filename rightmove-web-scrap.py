@@ -4,7 +4,6 @@ import time
 import locale
 import random
 import json
-import config
 import requests
 
 
