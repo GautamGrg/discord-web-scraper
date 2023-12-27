@@ -6,12 +6,9 @@ import random
 import json
 import requests
 
-
-
 DISCORD_WEBHOOK_PATH = "https://discord.com/api/webhooks/914721010664742943/g-hf_nUM7r1_6aqXaoEEbNoX8cXHgj2eOyiQ5YTtEEI2Gs6ZsuTY3_Lfx7I1MDJylIv6"
-target_url = "https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E1114&minBedrooms=2&maxPrice=400000&sortType=6&propertyTypes=detached%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=&dontShow=&furnishTypes=&keywords="
-
-# print (soup)
+target_url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E87490&minBedrooms=2&maxPrice=400000&sortType=6&propertyTypes=detached%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=&dontShow=&furnishTypes=&keywords='
+headers = {'User-Agent': 'Chrome/91.0.4472.124'}
 
 def scrape_timer():
     scrape_interval = 1800
@@ -19,7 +16,7 @@ def scrape_timer():
 
 
 def house_listing():
-    response = requests.get (target_url)
+    response = requests.get(target_url, headers=headers)
     soup = BeautifulSoup(response.content, "html.parser")
 
     store = []
