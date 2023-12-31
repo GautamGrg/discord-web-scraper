@@ -6,17 +6,16 @@ import random
 import json
 import requests
 
-DISCORD_WEBHOOK_PATH = "https://discord.com/api/webhooks/914721010664742943/g-hf_nUM7r1_6aqXaoEEbNoX8cXHgj2eOyiQ5YTtEEI2Gs6ZsuTY3_Lfx7I1MDJylIv6"
-target_url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E87490&minBedrooms=2&maxPrice=400000&sortType=6&propertyTypes=detached%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=&dontShow=&furnishTypes=&keywords='
+webhook_Url = "https://discord.com/api/webhooks/1191134872773873815/hKAbKKEt0DU_wI4NDyblvOrdifSumEq8ez5Ul6X4PvIhDgSFF37uXkxOTYbdteQbTa6q"
+target_Url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E87490&minBedrooms=3&maxPrice=500000&radius=5.0&sortType=6&propertyTypes=detached%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=&dontShow=&furnishTypes=&keywords='
 headers = {'User-Agent': 'Chrome/91.0.4472.124'}
 
 def scrape_timer():
     scrape_interval = 1800
     return scrape_interval
 
-
 def house_listing():
-    response = requests.get(target_url, headers=headers)
+    response = requests.get(target_Url, headers=headers)
     soup = BeautifulSoup(response.content, "html.parser")
 
     store = []
@@ -29,19 +28,51 @@ def house_listing():
 
     for i in range(1, 24, len(titles)):
         store.append ({
-            'title' : titles[i],
-            'address' : addresses[i],
-            'description' : descp[i],
+            'title' : (titles[i]),
+            'address' : (addresses[i]),
+            'description' : (descp[i]),
             'price' : prices[i],
             'date' : dates[i],
             'image' : images[i]
         })
     return store
-    
 
-while True:
-    latest_listing = house_listing()
-    print (json.dumps(latest_listing, indent = 2, ensure_ascii=False))
-    time.sleep(scrape_timer())
+
+if __name__ == '__main__':
+    listings = house_listing()
+    for listing in listings:
+        data = {   
+        "content" : 'Rightmove listing',
+        "embeds" : [{
+            "title" : listing["title"],
+            "description": f"Price: {listing['price']}",
+            "thumbnail" : {"url": listing["image"]}
+            }]
+        }
+    send_Webhook = requests.post (webhook_Url, json=data)
+    print (send_Webhook.content)
+
+
+
+# print (json.dumps(house_listing(), indent = 2, ensure_ascii=False))
+# response = (json.dumps(data, indent = 2, ensure_ascii=False))
+
+# while True:
+#     latest_listing = house_listing()
+#     print (json.dumps(latest_listing, indent = 2, ensure_ascii=False))
+#     time.sleep(scrape_timer())
+
+
+# response = json.dumps (house_listing(), indent=2, ensure_ascii= False)
+# send_Webhook = requests.post (webhook_Url, json=house_listing()) 
+# print (send_Webhook.status_code)
+# print (send_Webhook.content)
+
+# print (json.dumps(house_listing(), indent=2))
+
+# response = requests.post (webhook_Url, json = data)
+# print (response.status_code)
+# print (response.content)
+
     
 
