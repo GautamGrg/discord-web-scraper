@@ -26,7 +26,7 @@ def house_listing():
     dates = [date.text.split()[-1] for date in soup.findAll('span', {'class':'propertyCard-branchSummary-addedOrReduced'})]
     images = [image['src'] for image in soup.findAll('img', {'itemprop' : 'image'})]
 
-    for i in range(1, 24, len(titles)):
+    for i in range(1, 25, len(titles)):
         store.append ({
             'title' : (titles[i]),
             'address' : (addresses[i]),
@@ -37,25 +37,121 @@ def house_listing():
         })
     return store
 
+def payload():
+    try:
+        listings = house_listing()
+        responses = []
+        for listing in listings:
+            data = {   
+                "content": 'Rightmove listing',
+                "embeds": [{
+                    "title": listing["title"],
+                    "description": f"Price: {listing['price']}",
+                    "thumbnail": {"url": listing["image"]}
+                }]
+            }
+            send_Webhook = requests.post(webhook_Url, json=data)
+            responses.append(send_Webhook)
+        return responses
+    except Exception as err:
+        print(err)
+
 if __name__ == '__main__':
-    listings = house_listing()
-    for listing in listings:
-        data = {   
-        "content" : 'Rightmove listing',
-        "embeds" : [{
-            "title" : listing["title"],
-            "description": f"Price: {listing['price']}",
-            "thumbnail" : {"url": listing["image"]}
-            }]
-        }
-    send_Webhook=requests.post(webhook_Url, json=data)
-    time.sleep(scrape_timer())
-    while True: 
-        if send_Webhook != send_Webhook:
-            send_Webhook=requests.post(webhook_Url, json=data)
-            time.sleep(scrape_timer())
-        else:
-            continue
+    temp = set()
+    while True:
+        try:
+            discord_POST = payload()
+            for response in discord_POST:
+                if response.status_code == 200 and response.json().get('status') == 200:
+                    listing_data = response.json().get('data', {}).get('listing', {})
+                    listing_identifier = f"{listing_data.get('title')}_{listing_data.get('address')}"
+                    if listing_identifier not in temp:
+                        temp.add(listing_identifier)
+                        print(f"New listing: {listing_data}")
+                    else:
+                        print("Duplicate listing, not posting to Discord.")
+                else:
+                    print(f"Error posting to Discord: {response.status_code} - {response.text}")
+
+        except Exception as err:
+            print(err)
+        time.sleep(scrape_timer())
+
+
+# def payload():
+#     try:
+#         listings = house_listing()
+#         response = []
+#         for listing in listings:
+#             data = {   
+#             "content" : 'Rightmove listing',
+#             "embeds" : [{
+#                 "title" : listing["title"],
+#                 "description": f"Price: {listing['price']}",
+#                 "thumbnail" : {"url": listing["image"]}
+#             }]
+#             }
+#             send_Webhook = requests.post(webhook_Url, json=data)
+#             response.append(send_Webhook)
+#         return response
+#     except Exception as err:
+#         print (err)
+
+# if __name__ == '__main__':
+#     temp = set()
+#     discord_POST = payload()
+#     print (discord_POST)
+#     while True:
+#         for response in discord_POST:
+#             listing_identifier = (f"{discord_POST.get('title')}")
+#             if listing_identifier not in temp:
+#                 temp.add(listing_identifier)
+    
+
+
+
+            # if i not in temp:
+            #     temp.append(i)
+            #     send_Webhook = requests.post(webhook_Url, json=i)
+            # else:
+            #     pass
+    #print (discord_POST.status_code)
+
+
+
+
+
+
+
+    # listings = house_listing()
+    # for listing in listings:
+    #     data = {   
+    #     "content" : 'Rightmove listing',
+    #     "embeds" : [{
+    #         "title" : listing["title"],
+    #         "description": f"Price: {listing['price']}",
+    #         "thumbnail" : {"url": listing["image"]}
+    #         }]
+    #     }
+    # send_Webhook=requests.post(webhook_Url, json=data)
+    # time.sleep(scrape_timer())
+    # while True: 
+    #     if send_Webhook != send_Webhook:
+    #         send_Webhook=requests.post(webhook_Url, json=data)
+    #         time.sleep(scrape_timer())
+    #     else:
+    #         continue
+
+        
+        # while True: 
+        #     if send_Webhook != send_Webhook:
+        #         send_Webhook=requests.post(webhook_Url, json=data)
+        #         time.sleep(scrape_timer())
+        #     else:
+        #         continue
+
+
+   
 
             
 
