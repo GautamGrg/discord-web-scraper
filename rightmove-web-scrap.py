@@ -6,7 +6,7 @@ import random
 import json
 import requests
 
-webhook_Url = "https://discord.com/api/webhooks/1191134872773873815/hKAbKKEt0DU_wI4NDyblvOrdifSumEq8ez5Ul6X4PvIhDgSFF37uXkxOTYbdteQbTa6q"
+webhook_Url = "your webhook api"
 target_Url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E87490&minBedrooms=3&maxPrice=500000&radius=5.0&sortType=6&propertyTypes=detached%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=&dontShow=&furnishTypes=&keywords='
 headers = {'User-Agent': 'Chrome/91.0.4472.124'}
 
