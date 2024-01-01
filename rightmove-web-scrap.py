@@ -6,8 +6,8 @@ import random
 import json
 import requests
 
-webhook_Url = "your webhook api"
-target_Url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E87490&minBedrooms=3&maxPrice=500000&radius=5.0&sortType=6&propertyTypes=detached%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=&dontShow=&furnishTypes=&keywords='
+webhook_Url = "your discord webhook api"
+target_Url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=USERDEFINEDAREA%5E%7B%22polylines%22%3A%22emmmIrtzQnldW%60hDo%7Ck%40qstWc_iLdtjDwfdChxxAkiHxgrEmvuD~gDwg~Crz~GlauDpnQ%22%7D&sortType=6&propertyTypes=&mustHave=&dontShow=&furnishTypes=&keywords='
 headers = {'User-Agent': 'Chrome/91.0.4472.124'}
 
 def scrape_timer():
@@ -37,7 +37,6 @@ def house_listing():
         })
     return store
 
-
 if __name__ == '__main__':
     listings = house_listing()
     for listing in listings:
@@ -49,8 +48,25 @@ if __name__ == '__main__':
             "thumbnail" : {"url": listing["image"]}
             }]
         }
-    send_Webhook = requests.post (webhook_Url, json=data)
-    print (send_Webhook.content)
+    send_Webhook=requests.post(webhook_Url, json=data)
+    time.sleep(scrape_timer())
+    while True: 
+        if send_Webhook != send_Webhook:
+            send_Webhook=requests.post(webhook_Url, json=data)
+            time.sleep(scrape_timer())
+        else:
+            continue
+
+            
+
+    
+    
+    # else:
+    #     while True:
+    #         send_Webhook = requests.post (webhook_Url, json=data)
+    #         time.sleep(scrape_timer())
+        # print (send_Webhook.status_code)
+        # print (send_Webhook.content)
 
 
 
