@@ -8,7 +8,7 @@ import requests
 
 webhook_Url = "your discord webhook api"
 target_Url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=USERDEFINEDAREA%5E%7B%22polylines%22%3A%22emmmIrtzQnldW%60hDo%7Ck%40qstWc_iLdtjDwfdChxxAkiHxgrEmvuD~gDwg~Crz~GlauDpnQ%22%7D&sortType=6&propertyTypes=&mustHave=&dontShow=&furnishTypes=&keywords='
-headers = {'User-Agent': 'Chrome/91.0.4472.124'}
+headers = {'User-Agent': 'Chrome/120.0.6099.144'}
 
 def scrape_timer():
     scrape_interval = 1800
