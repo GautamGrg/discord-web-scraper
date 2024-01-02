@@ -6,12 +6,12 @@ import random
 import json
 import requests
 
-webhook_Url = "your discord webhook api"
+webhook_Url = "Your discord webhook API"
 target_Url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=USERDEFINEDAREA%5E%7B%22polylines%22%3A%22emmmIrtzQnldW%60hDo%7Ck%40qstWc_iLdtjDwfdChxxAkiHxgrEmvuD~gDwg~Crz~GlauDpnQ%22%7D&sortType=6&propertyTypes=&mustHave=&dontShow=&furnishTypes=&keywords='
 headers = {'User-Agent': 'Chrome/120.0.6099.144'}
 
 def scrape_timer():
-    scrape_interval = 1800
+    scrape_interval = 30
     return scrape_interval
 
 def house_listing():
@@ -35,48 +35,85 @@ def house_listing():
             'date' : dates[i],
             'image' : images[i]
         })
+    # print (store)
     return store
-
-def payload():
-    try:
-        listings = house_listing()
-        responses = []
-        for listing in listings:
-            data = {   
-                "content": 'Rightmove listing',
-                "embeds": [{
-                    "title": listing["title"],
-                    "description": f"Price: {listing['price']}",
-                    "thumbnail": {"url": listing["image"]}
-                }]
-            }
-            send_Webhook = requests.post(webhook_Url, json=data)
-            responses.append(send_Webhook)
-        return responses
-    except Exception as err:
-        print(err)
 
 if __name__ == '__main__':
     temp = set()
     while True:
         try:
-            discord_POST = payload()
-            for response in discord_POST:
-                if response.status_code == 200 and response.json().get('status') == 200:
-                    listing_data = response.json().get('data', {}).get('listing', {})
-                    listing_identifier = f"{listing_data.get('title')}_{listing_data.get('address')}"
-                    if listing_identifier not in temp:
-                        temp.add(listing_identifier)
-                        print(f"New listing: {listing_data}")
-                    else:
-                        print("Duplicate listing, not posting to Discord.")
-                else:
-                    print(f"Error posting to Discord: {response.status_code} - {response.text}")
+            discord_POST = house_listing()
+            for listing in discord_POST:
+                # Create a unique identifier for the current listing
+                listing_identifier = f"{listing['title']}"
+                # Check if the current listing has been sent recently
+                if listing_identifier not in temp:
+                    data = {   
+                        "content": 'Rightmove listing',
+                        "embeds": [{
+                            "title": listing["title"],
+                            "description": f"Price: {listing['price']}",
+                            "thumbnail": {"url": listing["image"]}
+                        }]
+                    }
+                    send_Webhook = requests.post(webhook_Url, json=data)
+                    print(f"New listing posted: {listing}")
+                    temp.add(listing_identifier)
 
+            # Wait before processing the next set of listings
+            # time.sleep(scrape_timer())
         except Exception as err:
             print(err)
-        time.sleep(scrape_timer())
 
+# if __name__ == '__main__':
+#     # temp = set()
+#     while True:
+#         try:
+#             temp = set()
+#             discord_POST = house_listing()
+#             for listing in discord_POST:
+#                 data = {   
+#                     "content": 'Rightmove listing',
+#                     "embeds": [{
+#                         "title": listing["title"],
+#                         "description": f"Price: {listing['price']}",
+#                         "thumbnail": {"url": listing["image"]}
+#                     }]
+#                 }
+#                 # listing_data = response.json().get('data', {}).get('listing', {})
+#                 # listing_identifier = response.json().get('title')
+#                 # listing_data = response.strip().get({'embeds': 'title'})
+#                 # listing_identifier = f"{listing_data.get('title')}_{listing_data.get('address')}"
+#                 if listing not in temp:
+#                     send_Webhook = requests.post(webhook_Url, json=data)
+#                     temp.add(send_Webhook)
+#                 else:
+#                     print("Duplicate listing, not posting to Discord.")
+#             # time.sleep(scrape_timer())
+#         except Exception as err:
+#             print(err)
+        
+# def payload():
+#     try:
+#         listings = house_listing()
+#         responses = []
+#         for listing in listings:
+#             data = {   
+#                 "content": 'Rightmove listing',
+#                 "embeds": [{
+#                     "title": listing["title"],
+#                     "description": f"Price: {listing['price']}",
+#                     "thumbnail": {"url": listing["image"]}
+#                 }]
+#             }
+#         #     send_Webhook = requests.post(webhook_Url, json=data)
+#         #     responses.append(send_Webhook)
+#         # return responses
+#     except Exception as err:
+#         print(err)
+
+# print (payload())
+            
 
 # def payload():
 #     try:
