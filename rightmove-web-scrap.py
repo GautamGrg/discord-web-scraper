@@ -1,13 +1,9 @@
 from bs4 import BeautifulSoup
 from discord_webhook import DiscordWebhook, DiscordEmbed
-import time
-import locale
-import random
-import json
 import requests
 
-webhook_Url = "Your discord webhook API"
-target_Url = 'https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=USERDEFINEDAREA%5E%7B%22polylines%22%3A%22emmmIrtzQnldW%60hDo%7Ck%40qstWc_iLdtjDwfdChxxAkiHxgrEmvuD~gDwg~Crz~GlauDpnQ%22%7D&sortType=6&propertyTypes=&mustHave=&dontShow=&furnishTypes=&keywords='
+webhook_Url = "Your discord webhook"
+target_Url = "Your rightmove link"
 headers = {'User-Agent': 'Chrome/120.0.6099.144'}
 
 def scrape_timer():
@@ -23,7 +19,7 @@ def house_listing():
     addresses = [address['content'] for address in soup.find_all('meta', {'itemprop' : 'streetAddress'})]
     descp = [description.text for description in soup.find_all('span', {'data-test': 'property-description'})]
     prices = [price.text.strip() for price in soup.find_all('div', {'class' : 'propertyCard-priceValue'})]
-    dates = [date.text.split()[-1] for date in soup.findAll('span', {'class':'propertyCard-branchSummary-addedOrReduced'})]
+    dates = [date.text.split() for date in soup.findAll('span', {'class':'propertyCard-branchSummary-addedOrReduced'})]
     images = [image['src'] for image in soup.findAll('img', {'itemprop' : 'image'})]
 
     for i in range(1, 25, len(titles)):
@@ -45,7 +41,7 @@ if __name__ == '__main__':
             discord_POST = house_listing()
             for listing in discord_POST:
                 # Create a unique identifier for the current listing
-                listing_identifier = f"{listing['title']}"
+                listing_identifier = (listing['title'], listing['description'])
                 # Check if the current listing has been sent recently
                 if listing_identifier not in temp:
                     data = {   
@@ -59,13 +55,12 @@ if __name__ == '__main__':
                     send_Webhook = requests.post(webhook_Url, json=data)
                     print(f"New listing posted: {listing}")
                     temp.add(listing_identifier)
+                    print(temp)
 
             # Wait before processing the next set of listings
             # time.sleep(scrape_timer())
         except Exception as err:
             print(err)
-
-
 
     
 
